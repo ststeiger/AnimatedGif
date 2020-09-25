@@ -4,6 +4,11 @@ namespace AnimatedGif.Console
 
 
     // https://stackoverflow.com/questions/64023538/is-it-possible-to-merge-a-image1-gift-and-image2-jpg-with-net-or-javascript
+    // https://www.evoketechnologies.com/blog/code-review-checklist-perform-effective-code-reviews/
+    // https://www.michaelagreiler.com/code-review-checklist-2/
+    // https://de.wikipedia.org/wiki/Zahlennamen
+    // https://en.wikipedia.org/wiki/Names_of_large_numbers
+
     public class Program
     {
 
