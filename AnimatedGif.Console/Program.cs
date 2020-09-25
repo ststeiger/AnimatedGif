@@ -9,6 +9,10 @@ namespace AnimatedGif.Console
     // https://de.wikipedia.org/wiki/Zahlennamen
     // https://en.wikipedia.org/wiki/Names_of_large_numbers
 
+    // https://www.google.com/search?hl=en&output=search&sclient=psy-ab&q=d3js%20tutorial&cad=h
+    // https://github.com/d3/d3/wiki/Tutorials
+    // https://bost.ocks.org/mike/circles/
+    // https://bost.ocks.org/mike/selection/
     public class Program
     {
 
