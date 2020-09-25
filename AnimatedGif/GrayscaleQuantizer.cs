@@ -1,39 +1,41 @@
 ﻿#region License Information (GPL v3)
 
-  /*
-     Source code provocatively stolen from ShareX: https://github.com/ShareX/ShareX.
-     (Seriously, awesome work over there, I used some of the parts to create an easy
-     to use .NET package for everyone.)
-     Their License:
+/*
+   Source code provocatively stolen from ShareX: https://github.com/ShareX/ShareX.
+   (Seriously, awesome work over there, I used some of the parts to create an easy
+   to use .NET package for everyone.)
+   Their License:
 
-     ShareX - A program that allows you to take screenshots and share any file type
-     Copyright (c) 2007-2017 ShareX Team
-     This program is free software; you can redistribute it and/or
-     modify it under the terms of the GNU General Public License
-     as published by the Free Software Foundation; either version 2
-     of the License, or (at your option) any later version.
-     This program is distributed in the hope that it will be useful,
-     but WITHOUT ANY WARRANTY; without even the implied warranty of
-     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-     GNU General Public License for more details.
-     You should have received a copy of the GNU General Public License
-     along with this program; if not, write to the Free Software
-     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-     Optionally you can also view the license at <http://www.gnu.org/licenses/>.
- */
+   ShareX - A program that allows you to take screenshots and share any file type
+   Copyright (c) 2007-2017 ShareX Team
+   This program is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public License
+   as published by the Free Software Foundation; either version 2
+   of the License, or (at your option) any later version.
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, write to the Free Software
+   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+   Optionally you can also view the license at <http://www.gnu.org/licenses/>.
+*/
 
-  #endregion License Information (GPL v3)
+#endregion License Information (GPL v3)
 
 
 using System;
 using System.Collections;
 using System.Drawing;
 
-namespace AnimatedGif {
+namespace AnimatedGif
+{
     /// <summary>
     ///     Summary description for PaletteQuantizer.
     /// </summary>
-    public class GrayscaleQuantizer : PaletteQuantizer {
+    public class GrayscaleQuantizer : PaletteQuantizer
+    {
         /// <summary>
         ///     Construct the palette quantizer
         /// </summary>
@@ -41,7 +43,8 @@ namespace AnimatedGif {
         ///     Palette quantization only requires a single quantization step
         /// </remarks>
         public GrayscaleQuantizer()
-            : base(new ArrayList()) {
+            : base(new ArrayList())
+        {
             Colors = new Color[256];
 
             const int nColors = 256;
@@ -49,7 +52,8 @@ namespace AnimatedGif {
             // Initialize a new color table with entries that are determined
             // by some optimal palette-finding algorithm; for demonstration
             // purposes, use a grayscale.
-            for (uint i = 0; i < nColors; i++) {
+            for (uint i = 0; i < nColors; i++)
+            {
                 const uint alpha = 0xFF; // Colors are opaque.
                 uint intensity = Convert.ToUInt32(i * 0xFF / (nColors - 1)); // Even distribution.
 
@@ -61,10 +65,10 @@ namespace AnimatedGif {
                 // Otherwise, use your favorite color reduction algorithm
                 // and an optimum palette for that algorithm generated here.
                 // For example, a color histogram, or a median cut palette.
-                Colors[i] = Color.FromArgb((int) alpha,
-                    (int) intensity,
-                    (int) intensity,
-                    (int) intensity);
+                Colors[i] = Color.FromArgb((int)alpha,
+                    (int)intensity,
+                    (int)intensity,
+                    (int)intensity);
             }
         }
 
@@ -73,7 +77,8 @@ namespace AnimatedGif {
         /// </summary>
         /// <param name="pixel">The pixel to quantize</param>
         /// <returns>The quantized value</returns>
-        protected override byte QuantizePixel(Color32 pixel) {
+        protected override byte QuantizePixel(Color32 pixel)
+        {
             double luminance = pixel.Red * 0.299 + pixel.Green * 0.587 + pixel.Blue * 0.114;
 
             // Gray scale is an intensity map from black to white.
@@ -82,7 +87,7 @@ namespace AnimatedGif {
             // Also, constrain the index choices by the number of
             // colors to do, and then set that pixel's index to the
             // byte value.
-            byte colorIndex = (byte) (luminance + 0.5);
+            byte colorIndex = (byte)(luminance + 0.5);
 
             return colorIndex;
         }

@@ -1,28 +1,28 @@
 ﻿#region License Information (GPL v3)
 
-  /*
-     Source code provocatively stolen from ShareX: https://github.com/ShareX/ShareX.
-     (Seriously, awesome work over there, I used some of the parts to create an easy
-     to use .NET package for everyone.)
-     Their License:
+/*
+   Source code provocatively stolen from ShareX: https://github.com/ShareX/ShareX.
+   (Seriously, awesome work over there, I used some of the parts to create an easy
+   to use .NET package for everyone.)
+   Their License:
 
-     ShareX - A program that allows you to take screenshots and share any file type
-     Copyright (c) 2007-2017 ShareX Team
-     This program is free software; you can redistribute it and/or
-     modify it under the terms of the GNU General Public License
-     as published by the Free Software Foundation; either version 2
-     of the License, or (at your option) any later version.
-     This program is distributed in the hope that it will be useful,
-     but WITHOUT ANY WARRANTY; without even the implied warranty of
-     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-     GNU General Public License for more details.
-     You should have received a copy of the GNU General Public License
-     along with this program; if not, write to the Free Software
-     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-     Optionally you can also view the license at <http://www.gnu.org/licenses/>.
- */
+   ShareX - A program that allows you to take screenshots and share any file type
+   Copyright (c) 2007-2017 ShareX Team
+   This program is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public License
+   as published by the Free Software Foundation; either version 2
+   of the License, or (at your option) any later version.
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, write to the Free Software
+   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+   Optionally you can also view the license at <http://www.gnu.org/licenses/>.
+*/
 
-  #endregion License Information (GPL v3)
+#endregion License Information (GPL v3)
 
 
 using System;
@@ -31,8 +31,10 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace AnimatedGif {
-    public class AnimatedGifCreator : IDisposable {
+namespace AnimatedGif
+{
+    public class AnimatedGifCreator : IDisposable
+    {
         private bool _createdHeader;
         private readonly Stream _stream;
 
@@ -43,7 +45,8 @@ namespace AnimatedGif {
 
             _stream = stream;
         }
-        public AnimatedGifCreator(string filePath, int delay = 33, int repeat = 0) {
+        public AnimatedGifCreator(string filePath, int delay = 33, int repeat = 0)
+        {
             FilePath = filePath;
             Delay = delay;
             Repeat = repeat;
@@ -56,7 +59,8 @@ namespace AnimatedGif {
         public int Repeat { get; }
         public int FrameCount { get; private set; }
 
-        public void Dispose() {
+        public void Dispose()
+        {
             Finish();
         }
 
@@ -66,7 +70,8 @@ namespace AnimatedGif {
         /// <param name="image">The image to add to the GIF stack</param>
         /// <param name="delay">The delay in milliseconds this GIF will be delayed (-1: Indicating class property delay)</param>
         /// <param name="quality">The GIFs quality</param>
-        public void AddFrame(Image image, int delay = -1, GifQuality quality = GifQuality.Default) {
+        public void AddFrame(Image image, int delay = -1, GifQuality quality = GifQuality.Default)
+        {
             var gif = new GifClass();
             gif.LoadGifPicture(image, quality);
 
@@ -92,8 +97,10 @@ namespace AnimatedGif {
         /// <param name="path">The image's path which will be added to the GIF stack</param>
         /// <param name="delay">The delay in milliseconds this GIF will be delayed (-1: Indicating class property delay)</param>
         /// <param name="quality">The GIFs quality</param>
-        public void AddFrame(string path, int delay = -1, GifQuality quality = GifQuality.Default) {
-            using (var img = Helper.LoadImage(path)) {
+        public void AddFrame(string path, int delay = -1, GifQuality quality = GifQuality.Default)
+        {
+            using (var img = Helper.LoadImage(path))
+            {
                 AddFrame(img, delay, quality);
             }
         }
@@ -152,7 +159,8 @@ namespace AnimatedGif {
         /// <summary>
         ///     Finish creating the GIF and start flushing
         /// </summary>
-        private void Finish() {
+        private void Finish()
+        {
             if (_stream == null)
                 return;
             _stream.WriteByte(0x3B); // Image terminator
@@ -163,42 +171,45 @@ namespace AnimatedGif {
         /// <summary>
         ///     Create the GIFs header block (GIF89a)
         /// </summary>
-        private static byte[] CreateHeaderBlock() {
-            return new[] {(byte) 'G', (byte) 'I', (byte) 'F', (byte) '8', (byte) '9', (byte) 'a'};
+        private static byte[] CreateHeaderBlock()
+        {
+            return new[] { (byte)'G', (byte)'I', (byte)'F', (byte)'8', (byte)'9', (byte)'a' };
         }
 
-        private static byte[] CreateApplicationExtensionBlock(int repeat) {
+        private static byte[] CreateApplicationExtensionBlock(int repeat)
+        {
             byte[] buffer = new byte[19];
             buffer[0] = 0x21; // Extension introducer
             buffer[1] = 0xFF; // Application extension
             buffer[2] = 0x0B; // Size of block
-            buffer[3] = (byte) 'N'; // NETSCAPE2.0
-            buffer[4] = (byte) 'E';
-            buffer[5] = (byte) 'T';
-            buffer[6] = (byte) 'S';
-            buffer[7] = (byte) 'C';
-            buffer[8] = (byte) 'A';
-            buffer[9] = (byte) 'P';
-            buffer[10] = (byte) 'E';
-            buffer[11] = (byte) '2';
-            buffer[12] = (byte) '.';
-            buffer[13] = (byte) '0';
+            buffer[3] = (byte)'N'; // NETSCAPE2.0
+            buffer[4] = (byte)'E';
+            buffer[5] = (byte)'T';
+            buffer[6] = (byte)'S';
+            buffer[7] = (byte)'C';
+            buffer[8] = (byte)'A';
+            buffer[9] = (byte)'P';
+            buffer[10] = (byte)'E';
+            buffer[11] = (byte)'2';
+            buffer[12] = (byte)'.';
+            buffer[13] = (byte)'0';
             buffer[14] = 0x03; // Size of block
             buffer[15] = 0x01; // Loop indicator
-            buffer[16] = (byte) (repeat % 0x100); // Number of repetitions
-            buffer[17] = (byte) (repeat / 0x100); // 0 for endless loop
+            buffer[16] = (byte)(repeat % 0x100); // Number of repetitions
+            buffer[17] = (byte)(repeat / 0x100); // 0 for endless loop
             buffer[18] = 0x00; // Block terminator
             return buffer;
         }
 
-        private static byte[] CreateGraphicsControlExtensionBlock(int delay) {
+        private static byte[] CreateGraphicsControlExtensionBlock(int delay)
+        {
             byte[] buffer = new byte[8];
             buffer[0] = 0x21; // Extension introducer
             buffer[1] = 0xF9; // Graphic control extension
             buffer[2] = 0x04; // Size of block
             buffer[3] = 0x09; // Flags: reserved, disposal method, user input, transparent color
-            buffer[4] = (byte) (delay / 10 % 0x100); // Delay time low byte
-            buffer[5] = (byte) (delay / 10 / 0x100); // Delay time high byte
+            buffer[4] = (byte)(delay / 10 % 0x100); // Delay time low byte
+            buffer[5] = (byte)(delay / 10 / 0x100); // Delay time high byte
             buffer[6] = 0xFF; // Transparent color index
             buffer[7] = 0x00; // Block terminator
             return buffer;
