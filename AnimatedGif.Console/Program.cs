@@ -3,7 +3,8 @@ namespace AnimatedGif.Console
 {
 
 
-    class Program
+    // https://stackoverflow.com/questions/64023538/is-it-possible-to-merge-a-image1-gift-and-image2-jpg-with-net-or-javascript
+    public class Program
     {
 
 
