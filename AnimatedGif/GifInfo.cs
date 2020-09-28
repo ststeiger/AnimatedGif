@@ -1,4 +1,7 @@
 ﻿
+using System;
+using System.Runtime.InteropServices;
+
 namespace AnimatedGif
 {
 
@@ -66,6 +69,8 @@ namespace AnimatedGif
 
         public GifInfo(string filePath)
         {
+            bool isWindows = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+            
             if (System.IO.File.Exists(filePath))
             {
                 using (System.Drawing.Image image = System.Drawing.Image.FromFile(filePath))
@@ -92,10 +97,20 @@ namespace AnimatedGif
                                 image.SelectActiveFrame(dimension, i);
                                 System.Drawing.Image frame = image.Clone() as System.Drawing.Image;
                                 frames.Add(frame);
+                                
+                                // https://docs.microsoft.com/en-us/dotnet/api/system.drawing.imaging.propertyitem.id?view=dotnet-plat-ext-3.1
+                                // 0x5100	PropertyTagFrameDelay
+                                byte[] propertyArray = image.GetPropertyItem(20736).Value;
 
-                                int delay = System.BitConverter.ToInt32(image.GetPropertyItem(20736).Value, index) * 10;
+                                int delay = 0;
+                                
+                                if(isWindows)        
+                                 delay = System.BitConverter.ToInt32(propertyArray, index) * 10;
+                                else
+                                    delay = System.BitConverter.ToInt32(propertyArray, 0) * 10;
+                                
                                 duration += (delay < 100 ? 100 : delay);
-
+                                
                                 index += 4;
                             } // Next i 
 
