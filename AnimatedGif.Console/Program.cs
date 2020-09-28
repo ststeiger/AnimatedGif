@@ -19,7 +19,7 @@ namespace AnimatedGif.Console
     public class Program
     {
 
-
+        // Example: Resize & crop with ImageSharp 
         public static void ResizeCrop(int width, int height, int x, int y, int cropWidth, int cropHeight)
         {
             string path = "";
@@ -90,7 +90,12 @@ namespace AnimatedGif.Console
 
             
             gif.Frames.RemoveFrame(0);
-            
+
+            SixLabors.ImageSharp.Formats.Gif.GifMetadata meta = gif.Metadata.GetGifMetadata();
+            meta.RepeatCount = 0;
+            // You only need to do this if your first image frame does not contain
+            // the colors required to represent following frames.
+            meta.ColorTableMode = SixLabors.ImageSharp.Formats.Gif.GifColorTableMode.Local;
 
             string path = @"output.gif";
             using (System.IO.FileStream fs = System.IO.File.Create(path))
@@ -239,7 +244,7 @@ namespace AnimatedGif.Console
                 using (System.Drawing.Image foa = ResizeImage(img, 150, 135))
                 {
 
-                    using (AnimatedGifCreator gif = AnimatedGif.Create(path, 33, -1))
+                    using (AnimatedGifCreator gif = AnimatedGif.Create(path, 33, 0))
                     {
                         // SixLabors.ImageSharp.Point pt = new SixLabors.ImageSharp.Point(290, 45);
 
@@ -275,8 +280,9 @@ namespace AnimatedGif.Console
             ReadGif();
             WriteGif();
 
-            CreateGif();
             GifInfoTest();
+            CreateGif();
+            
             GifCreatorTest();
 
             System.Console.WriteLine(" --- Press any key to continue --- ");
