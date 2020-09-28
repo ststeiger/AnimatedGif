@@ -97,7 +97,7 @@ namespace AnimatedGif.Console
             // the colors required to represent following frames.
             meta.ColorTableMode = SixLabors.ImageSharp.Formats.Gif.GifColorTableMode.Local;
 
-            string path = @"output.gif";
+            string path = @"outputImageSharp.gif";
             using (System.IO.FileStream fs = System.IO.File.Create(path))
             {
                 // gif.SaveAsGif(fs);
@@ -236,7 +236,7 @@ namespace AnimatedGif.Console
             // y = 45
             // w = 440 - 290 = 150
             // h = 180 -  45 = 135
-            string path = @"output2.gif";
+            string path = @"outputGDI.gif";
 
             using (System.Drawing.Image img = System.Drawing.Image.FromFile("FOA.jpg"))
             {
