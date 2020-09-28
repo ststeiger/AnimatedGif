@@ -1,5 +1,6 @@
 ﻿
 using SixLabors.ImageSharp; // Needed for GetGifMetadata 
+using SixLabors.ImageSharp.Advanced;
 using SixLabors.ImageSharp.Processing; // Neeeded for mutate
 
 
@@ -81,12 +82,15 @@ namespace AnimatedGif.Console
                     
                     // gif.Frames.InsertFrame(0, image.Frames[0]);
                     gif.Frames.AddFrame(frameImage.Frames[0]);
+
                     gif.Frames[i + 1].Metadata.GetGifMetadata().FrameDelay = 6;
                 } // End Using frameImage 
 
             } // Next i 
 
+            
             gif.Frames.RemoveFrame(0);
+            
 
             string path = @"output.gif";
             using (System.IO.FileStream fs = System.IO.File.Create(path))
@@ -170,7 +174,7 @@ namespace AnimatedGif.Console
         public static void GifCreatorTest()
         {
             // 33ms delay (~30fps)
-            using (AnimatedGifCreator gif = AnimatedGif.Create("gif.gif", 33))
+            using (AnimatedGifCreator gif = AnimatedGif.Create("gif.gif", 33, -1))
             {
                 System.Drawing.Image img1 = System.Drawing.Image.FromFile("img1.png");
                 gif.AddFrame(img1, delay: 2000, quality: GifQuality.Bit8);
@@ -183,11 +187,95 @@ namespace AnimatedGif.Console
         } // End Sub GifCreatorTest 
 
 
+        /// <summary>
+        /// Resize the image to the specified width and height.
+        /// </summary>
+        /// <param name="image">The image to resize.</param>
+        /// <param name="width">The width to resize to.</param>
+        /// <param name="height">The height to resize to.</param>
+        /// <returns>The resized image.</returns>
+        public static System.Drawing.Bitmap ResizeImage(System.Drawing.Image image, int width, int height)
+        {
+            System.Drawing.Rectangle destRect = new System.Drawing.Rectangle(0, 0, width, height);
+            System.Drawing.Bitmap destImage = new System.Drawing.Bitmap(width, height);
+
+            destImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
+
+            using (System.Drawing.Graphics graphics = System.Drawing.Graphics.FromImage(destImage))
+            {
+                graphics.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceCopy;
+                graphics.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+                graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                graphics.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+
+                using (System.Drawing.Imaging.ImageAttributes wrapMode = 
+                    new System.Drawing.Imaging.ImageAttributes())
+                {
+                    wrapMode.SetWrapMode(System.Drawing.Drawing2D.WrapMode.TileFlipXY);
+                    graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, System.Drawing.GraphicsUnit.Pixel, wrapMode);
+                }
+            }
+
+            return destImage;
+        }
+
+        public static void CreateGif()
+        {
+            // topLeft 290/45
+            // topRight 440/45
+            // bottomLeft 290/180
+            // bottomRight 440/180
+
+            // x = 290
+            // y = 45
+            // w = 440 - 290 = 150
+            // h = 180 -  45 = 135
+            string path = @"output2.gif";
+
+            using (System.Drawing.Image img = System.Drawing.Image.FromFile("FOA.jpg"))
+            {
+
+                using (System.Drawing.Image foa = ResizeImage(img, 150, 135))
+                {
+
+                    using (AnimatedGifCreator gif = AnimatedGif.Create(path, 33, -1))
+                    {
+                        // SixLabors.ImageSharp.Point pt = new SixLabors.ImageSharp.Point(290, 45);
+
+                        for (int i = 0; i < 69; ++i)
+                        {
+                            string fn = "sample-" + i.ToString().PadLeft(2, '0') + ".png";
+
+                            using (System.Drawing.Image imgFrame = System.Drawing.Image.FromFile(fn))
+                            {
+
+                                using (System.Drawing.Graphics gr = 
+                                    System.Drawing.Graphics.FromImage(imgFrame))
+                                {
+                                    gr.DrawImage(foa, new System.Drawing.Rectangle(290, 45, foa.Width, foa.Height));
+                                } // End using gr 
+
+                                gif.AddFrame(imgFrame, delay: 60, quality: GifQuality.Bit8);
+                            } // End Using img 
+
+                        } // Next i 
+
+                    } // End Using gif 
+
+                } // End Using foa 
+
+            } // End Using img 
+
+        } // End Sub WriteGif
+
+
         public static void Main(string[] args)
         {
             ReadGif();
             WriteGif();
-            
+
+            CreateGif();
             GifInfoTest();
             GifCreatorTest();
 
