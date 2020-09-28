@@ -1,6 +1,5 @@
 ﻿
 using SixLabors.ImageSharp; // Needed for GetGifMetadata 
-using SixLabors.ImageSharp.Advanced;
 using SixLabors.ImageSharp.Processing; // Neeeded for mutate
 
 
@@ -219,11 +218,13 @@ namespace AnimatedGif.Console
                 {
                     wrapMode.SetWrapMode(System.Drawing.Drawing2D.WrapMode.TileFlipXY);
                     graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, System.Drawing.GraphicsUnit.Pixel, wrapMode);
-                }
-            }
+                } // End Using wrapMode 
+
+            } // End Using graphics 
 
             return destImage;
-        }
+        } // End Function ResizeImage 
+
 
         public static void CreateGif()
         {
