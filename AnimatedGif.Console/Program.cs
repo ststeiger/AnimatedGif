@@ -1,10 +1,12 @@
 ﻿
-using SixLabors.ImageSharp; // Needed for GetGifMetadata 
 using SixLabors.ImageSharp.Processing; // Neeeded for mutate
+using SixLabors.ImageSharp; // Needed for GetGifMetadata
 
 
 namespace AnimatedGif.Console
 {
+
+
     // https://stackoverflow.com/questions/64023538/is-it-possible-to-merge-a-image1-gift-and-image2-jpg-with-net-or-javascript
     // https://www.evoketechnologies.com/blog/code-review-checklist-perform-effective-code-reviews/
     // https://www.michaelagreiler.com/code-review-checklist-2/
@@ -18,34 +20,43 @@ namespace AnimatedGif.Console
     public class Program
     {
 
+
         // Example: Resize & crop with ImageSharp 
-        public static void ResizeCrop(int width, int height, int x, int y, int cropWidth, int cropHeight)
+        public static void ResizeCrop(
+              System.IO.Stream stream 
+            , int width, int height 
+            , int x, int y 
+            , int cropWidth, int cropHeight) 
+        { 
+            using (System.IO.Stream outStream = new System.IO.MemoryStream())
+            {
+                using (SixLabors.ImageSharp.Image image = SixLabors.ImageSharp.Image.Load(
+                      stream
+                    , out SixLabors.ImageSharp.Formats.IImageFormat format)
+                )
+                {
+                    SixLabors.ImageSharp.Image clone = image.Clone(
+                        i => i.Resize(width, height)
+                            .Crop( new SixLabors.ImageSharp.Rectangle(x, y, cropWidth, cropHeight) )
+                    );
+
+                    SixLabors.ImageSharp.Formats.IImageEncoder form =
+                        new SixLabors.ImageSharp.Formats.Png.PngEncoder();
+
+                    clone.Save(outStream, form);
+                } // End Using image 
+
+            } // End Using outStream 
+
+        } // End Sub ResizeCrop 
+
+
+        public static void ResizeCrop(string path, int width, int height, int x, int y, int cropWidth, int cropHeight)
         {
-            string path = "";
 
             using (System.IO.FileStream inStream = System.IO.File.OpenRead(path))
             {
-
-                using (System.IO.Stream outStream = new System.IO.MemoryStream())
-                {
-                    using (SixLabors.ImageSharp.Image image = 
-                         SixLabors.ImageSharp.Image.Load(inStream 
-                        ,out SixLabors.ImageSharp.Formats.IImageFormat format) 
-                    )
-                    {
-                        SixLabors.ImageSharp.Image clone = image.Clone(
-                            i => i.Resize(width, height)
-                                .Crop(new SixLabors.ImageSharp.Rectangle(x, y, cropWidth, cropHeight))
-                        );
-
-                        SixLabors.ImageSharp.Formats.IImageEncoder form = 
-                            new SixLabors.ImageSharp.Formats.Png.PngEncoder();
-
-                        clone.Save(outStream, form);
-                    } // End Using image 
-
-                } // End Using outStream 
-
+                ResizeCrop(inStream, width, height, x, y, cropWidth, cropHeight);
             } // End Using inStream 
 
         } // End Sub ResizeCrop 
@@ -66,18 +77,22 @@ namespace AnimatedGif.Console
             SixLabors.ImageSharp.Image gif = new SixLabors.ImageSharp.Image<SixLabors.ImageSharp.PixelFormats.Rgba32>(480, 480);
 
             SixLabors.ImageSharp.Image foa = SixLabors.ImageSharp.Image.Load("FOA.jpg");
-            foa.Mutate(o => o.Resize(new SixLabors.ImageSharp.Size(150, 135)));
+            foa.Mutate(o => o.Resize(new SixLabors.ImageSharp.Size(150, 135)) );
             // foa.SaveAsPng("foa.png");
 
             SixLabors.ImageSharp.Point pt = new SixLabors.ImageSharp.Point(290, 45);
 
             for (int i = 0; i < 70; ++i)
             {
-                string fn = "frame-" + i.ToString().PadLeft(2, '0') + ".png";
-                using (SixLabors.ImageSharp.Image frameImage = SixLabors.ImageSharp.Image.Load(fn))
+                string framePath = "frame-" + i
+                                .ToString(System.Globalization.CultureInfo.InvariantCulture)
+                                .PadLeft(2, '0')
+                                + ".png";
+
+                using (SixLabors.ImageSharp.Image frameImage = SixLabors.ImageSharp.Image.Load(framePath))
                 {
                     // https://stackoverflow.com/questions/50860392/how-to-combine-two-images
-                    frameImage.Mutate(imageProcess => imageProcess.DrawImage(foa, pt, 1f));
+                    frameImage.Mutate(imageProcess => imageProcess.DrawImage(foa, pt, 1.0f));
                     
                     // gif.Frames.InsertFrame(0, image.Frames[0]);
                     gif.Frames.AddFrame(frameImage.Frames[0]);
@@ -128,13 +143,16 @@ namespace AnimatedGif.Console
 
                     using (SixLabors.ImageSharp.Image frameImage = image.Frames.CloneFrame(i))
                     {
-                        string outPath = "frame-" + i.ToString().PadLeft(2, '0') + ".png";
-                        
+                        string outPath = "frame-" + i
+                                .ToString(System.Globalization.CultureInfo.InvariantCulture)
+                                .PadLeft(2, '0')
+                                + ".png";
+
                         using (System.IO.Stream fs = System.IO.File.OpenWrite(outPath))
                         {
                             // we include all metadata from the original image;
                             frameImage.Save(fs, new SixLabors.ImageSharp.Formats.Png.PngEncoder());
-                        } 
+                        } // End Using fs 
 
                     } // End Using frameImage 
 
@@ -251,7 +269,10 @@ namespace AnimatedGif.Console
 
                         for (int i = 0; i < 69; ++i)
                         {
-                            string fn = "sample-" + i.ToString().PadLeft(2, '0') + ".png";
+                            string fn = "sample-" + i
+                                .ToString(System.Globalization.CultureInfo.InvariantCulture)
+                                .PadLeft(2, '0') 
+                                + ".png";
 
                             using (System.Drawing.Image imgFrame = System.Drawing.Image.FromFile(fn))
                             {
@@ -280,12 +301,12 @@ namespace AnimatedGif.Console
         {
             ReadGif();
             WriteGif();
-
+            
             GifInfoTest();
             CreateGif();
             
             GifCreatorTest();
-
+            
             System.Console.WriteLine(" --- Press any key to continue --- ");
             System.Console.ReadKey();
         } // End Sub Main 
